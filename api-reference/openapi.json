@@ -1,94 +1,90 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
+    "title": "Lead API",
+    "description": "This Lead API will add, delete, create and update lead data",
+    "termsOfService": "T&C",
+    "contact": {
+      "name": "Pramij",
+      "email": "pramij@gmail.com"
     },
-    "version": "1.0.0"
+    "license": {
+      "name": "Code With Robin"
+    },
+    "version": "v1"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "http://localhost:8082",
+      "description": "Dev"
+    },
+    {
+      "url": "http://localhost:8082",
+      "description": "QA"
+    },
+    {
+      "url": "http://localhost:8082",
+      "description": "Test"
     }
   ],
-  "security": [
+  "tags": [
     {
-      "bearerAuth": []
+      "name": "LeadController",
+      "description": "APIs for Lead"
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
+    "/leads/v1/update": {
+      "put": {
+        "tags": [
+          "LeadController"
+        ],
+        "summary": "Update existing Lead data",
+        "description": "APIs for updating existing Lead data in DB",
+        "operationId": "saveLeadData",
         "parameters": [
           {
-            "name": "limit",
+            "name": "leadId",
             "in": "query",
-            "description": "The maximum number of results to return",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "authToken",
+            "in": "header",
+            "description": "Authentication Token"
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
         "requestBody": {
-          "description": "Plant to add to the store",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/LeadUpdateRequest"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "plant response",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/ErrorCodeResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Lead details updated successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/LeadDataUpdateResponse"
                 }
               }
             }
@@ -96,14 +92,147 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/leads/v1/save": {
+      "post": {
+        "tags": [
+          "LeadController"
+        ],
+        "summary": "Create new Lead",
+        "description": "APIs for saving new Lead data in DB",
+        "operationId": "saveLeadData_1",
         "parameters": [
           {
-            "name": "id",
+            "name": "authToken",
+            "in": "header",
+            "description": "Authentication Token"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorCodeResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Lead details save successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadSaveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leads/v1/getleadbyid/{leadid}": {
+      "get": {
+        "tags": [
+          "LeadController"
+        ],
+        "operationId": "getLeadByLeadId",
+        "parameters": [
+          {
+            "name": "leadid",
             "in": "path",
-            "description": "ID of plant to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leads/v1/getallleads": {
+      "get": {
+        "tags": [
+          "LeadController"
+        ],
+        "summary": "Fetch all Lead",
+        "description": "APIs for fetching all Lead data from DB",
+        "operationId": "getLeadData",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadGetAllResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leads/v1/get-leads/{mobileNumber}": {
+      "get": {
+        "tags": [
+          "LeadController"
+        ],
+        "summary": "Fetch Lead",
+        "description": "APIs for fetching Lead data from DB based on mobile number",
+        "operationId": "getLeadData_1",
+        "parameters": [
+          {
+            "name": "mobileNumber",
+            "in": "path",
+            "description": "Mobile Number",
             "required": true,
             "schema": {
               "type": "integer",
@@ -112,16 +241,25 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
           "400": {
-            "description": "unexpected error",
+            "description": "Bad Request",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadFetchResponse"
                 }
               }
             }
@@ -132,63 +270,196 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "LeadDataUpdateResponse": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
+          "status": {
             "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
           },
           "message": {
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      },
+      "ErrorCodeResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "errorMessage": {
+            "type": "string"
+          }
+        }
+      },
+      "LeadUpdateRequest": {
+        "required": [
+          "leadId"
+        ],
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "LeadSaveResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      },
+      "LeadRequest": {
+        "required": [
+          "dob",
+          "email",
+          "firstName",
+          "gender",
+          "lastName",
+          "leadId",
+          "mobileNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "pattern": "^[A-Za-z]+$",
+            "type": "string"
+          },
+          "middleName": {
+            "pattern": "^[A-Za-z]*$",
+            "type": "string"
+          },
+          "lastName": {
+            "pattern": "^[A-Za-z]+$",
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "gender": {
+            "pattern": "^(Male|Female|Others)$",
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "LeadResponse": {
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "Data": {
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "LeadGetAllResponse": {
+        "type": "object",
+        "properties": {
+          "leadResponses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Data"
+            }
+          }
+        }
+      },
+      "LeadFetchResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Data"
+            }
+          }
+        }
       }
     }
   }
